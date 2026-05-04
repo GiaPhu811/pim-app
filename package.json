@@ -22,7 +22,7 @@
       "prettier": "^3.3.3"
     },
     "scripts": {
-      "prepare": "nx run-many -t build -p aesirx-sso aesirx-uikit aesirx-lib && nx run-many -t build:lib --exclude aesirx-uikit aesirx-lib aesirx-pim-app",
+      "prepare": "nx run aesirx-lib:build && nx run aesirx-sso:build && nx run aesirx-uikit:build && nx run-many -t build:lib --exclude aesirx-uikit aesirx-lib aesirx-pim-app",
       "dev": "nx run-many -t dev -p aesirx-pim-app aesirx-uikit aesirx-lib",
       "build": "nx run aesirx-pim-app:build",
       "build:lib": "nx run aesirx-pim-app:build:lib",
