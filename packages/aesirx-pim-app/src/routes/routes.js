@@ -5,13 +5,13 @@
 
 import React, { lazy } from 'react';
 import {
-  LoginPage,
-  ProfilePage,
   DigitalAssetsPage,
   MembersPage,
   EditMemberProvider,
   history,
 } from 'aesirx-uikit';
+import { LoginPage } from '../containers/LoginPage';
+import { ProfilePage } from '../containers/ProfilePage';
 const SSOConfig = lazy(() =>
   import('aesirx-sso').then((module) => {
     return { default: module.SSOConfig };
@@ -376,11 +376,6 @@ const settingRoutes = [
     path: '/profile',
     exact: false,
     main: () => <ProfilePage />,
-  },
-  {
-    path: '/sso',
-    exact: false,
-    main: () => <SSOConfig />,
   },
 ];
 
