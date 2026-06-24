@@ -133,6 +133,12 @@ const mainMenu = [
     icons: '/assets/images/data-stream.svg',
     icons_color: '/assets/images/data-stream.svg',
   },
+  {
+    text: 'txt_left_menu_woo_integration',
+    link: `/woo-integration`,
+    icons: '/assets/images/icon_woo.svg',
+    icons_color: '/assets/images/icon_woo.svg',
+  },
 ];
 
 const settingMenu = [

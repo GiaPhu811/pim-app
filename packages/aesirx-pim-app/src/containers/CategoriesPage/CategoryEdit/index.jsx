@@ -88,7 +88,6 @@ const EditCategory = observer(
     render() {
       const { t } = this.props;
 
-      console.log('rerender Category');
       if (status === PAGE_STATUS.LOADING) {
         return <Spinner />;
       }

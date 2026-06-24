@@ -4,13 +4,13 @@
  */
 
 import React, { Component } from 'react';
-import { Spinner, Input, PublishOptions, ActionsBar } from 'aesirx-uikit';
+import { Spinner, Input, PublishOptions, ActionsBar, notify } from 'aesirx-uikit';
 
 import { withTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import PAGE_STATUS from 'constants/PageStatus';
 import { withRouter } from 'react-router-dom';
-import { Col, Form, Row, Tab, Tabs } from 'react-bootstrap';
+import { Button, Col, Form, Row, Tab, Tabs } from 'react-bootstrap';
 import '../index.scss';
 import CommonInformation from './Component/CommonInformation';
 import { withProductViewModel } from 'containers/ProductsPage/ProductViewModel/ProductViewModelContextProvider';
@@ -34,6 +34,7 @@ import { TypeStore } from 'containers/TypePage/store';
 import TypeViewModel from 'containers/TypePage/TypeViewModel/TypeViewModel';
 import { SubTypeStore } from 'containers/SubTypePage/store';
 import SubTypeViewModel from 'containers/SubTypePage/SubTypeViewModel/SubTypeViewModel';
+import { wooSend } from 'containers/WooIntegrationPage/api';
 
 const categoryStore = new CategoryStore();
 const categoryViewModel = new CategoryViewModel(categoryStore);
@@ -71,6 +72,7 @@ const EditProduct = observer(
       this.validator = new SimpleReactValidator({
         autoForceUpdate: this,
       });
+      this.state = { ...this.state, syncingProduct: false };
       this.isEdit = props.match.params?.id ? true : false;
     }
 
@@ -119,6 +121,29 @@ const EditProduct = observer(
       this.validator.showMessages();
     }
 
+    handleSyncProduct = async () => {
+      const { t } = this.props;
+      if (!this.isEdit || this.state.syncingProduct) return;
+      const id = Number(this.props.match.params?.id);
+      if (!id) return;
+      this.setState({ syncingProduct: true });
+      try {
+        const data = await wooSend({ id }, 'syncProduct');
+        const synced = data?.synced ?? 0;
+        const errors = data?.errors ?? [];
+        if (errors.length > 0) {
+          notify(errors.map((e) => `#${e.id}: ${e.error}`).join('\n'), 'error');
+        } else {
+          notify(t('txt_woo_product_synced', { n: synced || 1 }), 'success');
+          await this.productDetailViewModel.initializeData();
+        }
+      } catch (error) {
+        notify(error?.message || t('txt_woo_sync_product_failed'), 'error');
+      } finally {
+        this.setState({ syncingProduct: false });
+      }
+    };
+
     render() {
       const { t } = this.props;
       this.validator.messages['required'] = t('txt_field_required_error_message');
@@ -136,7 +161,19 @@ const EditProduct = observer(
               isEdit={this.isEdit}
               redirectUrl={'/products/all'}
             />
-            <div className="position-relative">
+            <div className="position-relative d-flex align-items-center gap-2">
+              {this.isEdit && (
+                <Button
+                  variant="outline-primary"
+                  onClick={this.handleSyncProduct}
+                  disabled={this.state.syncingProduct}
+                  className="fw-semibold"
+                >
+                  {this.state.syncingProduct
+                    ? t('txt_woo_syncing_product')
+                    : t('txt_woo_sync_product')}
+                </Button>
+              )}
               <ActionsBar
                 buttons={[
                   {

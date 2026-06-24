@@ -114,9 +114,6 @@ const CategoryInformation = observer(
                   PIM_CATEGORY_DETAIL_FIELD_KEY.PARENT_ID
                 ] &&
                 this.viewModel.categoryDetailViewModel.formPropsData[
-                  PIM_CATEGORY_DETAIL_FIELD_KEY.PARENT_ID
-                ] !== 1 &&
-                this.viewModel.categoryDetailViewModel.formPropsData[
                   PIM_CATEGORY_DETAIL_FIELD_KEY.PARENT_NAME
                 ] !== 'PIM category'
                   ? {

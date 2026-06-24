@@ -1,11 +1,10 @@
 /*
  * Local PIM Profile page backed by the new express-backend:
- *   GET    /api/v1/auth/me                 — load current user
- *   PATCH  /api/v1/auth/me                 — update display_name / phone / department / title
+ *   GET    /api/v1/auth/me                 — load current member (member is root; email/status supplemented from users)
+ *   PATCH  /api/v1/auth/me                 — update display_name / phone / department / title / name / email / published
  *   POST   /api/v1/auth/change-password    — change own password (revokes sessions)
- * Replaces the aesirx-uikit ProfilePage which went through the Joomla member
- * webservice. Email + name come back inline; the page lets the user edit the
- * four self-updatable fields plus change their password.
+ * Response shape: { member, organisation, organisations } — `member` is the
+ * reditem_member doc with `email` and `status` synced from JoomlaUser.
  */
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -73,14 +72,14 @@ const ProfilePage = () => {
           return;
         }
         if (cancelled) return;
-        const u = data?.user ?? {};
+        const m = data?.member ?? {};
         setProfile({
-          email: u.email ?? '',
-          name: u.name ?? '',
-          display_name: u.display_name ?? '',
-          phone: u.phone ?? '',
-          department: u.department ?? '',
-          title: u.title ?? '',
+          email: m.email ?? '',
+          name: m.name ?? '',
+          display_name: m.display_name ?? '',
+          phone: m.phone ?? '',
+          department: m.department ?? '',
+          title: m.title ?? '',
         });
       } catch (err) {
         // eslint-disable-next-line no-console
@@ -233,28 +232,6 @@ const ProfilePage = () => {
                   type="text"
                   value={profile.phone}
                   onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))}
-                  disabled={saving}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>{t('txt_department') || 'Department'}</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={profile.department}
-                  onChange={(e) => setProfile((p) => ({ ...p, department: e.target.value }))}
-                  disabled={saving}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>{t('txt_title') || 'Title'}</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={profile.title}
-                  onChange={(e) => setProfile((p) => ({ ...p, title: e.target.value }))}
                   disabled={saving}
                 />
               </Form.Group>

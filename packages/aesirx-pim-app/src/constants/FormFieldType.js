@@ -5,7 +5,7 @@
 
 const FORM_FIELD_TYPE = {
   INPUT: 'text',
-  TEXTAREA: 2,
+  TEXTAREA: 'textarea',
   CHECKBOX: 'checkbox',
   NUMBER: 'number',
   DROPDOWN: 5,

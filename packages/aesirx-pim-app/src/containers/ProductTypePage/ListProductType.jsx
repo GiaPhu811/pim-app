@@ -48,7 +48,7 @@ const ListProductType = observer((props) => {
               )}
               <div>
                 <div className="mb-1">{value.name}</div>
-                {value.level === 1 && value?.organization_id === '0' ? (
+                {value.level === 1 && value?.organization_id === 0 ? (
                   <></>
                 ) : (
                   <div className="text-green">

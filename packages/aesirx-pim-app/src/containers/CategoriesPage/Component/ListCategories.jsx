@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { withTranslation } from 'react-i18next';
 import { observer } from 'mobx-react-lite';
 import { withCategoryViewModel } from '../CategoryViewModel/CategoryViewModelContextProvider';
@@ -7,15 +7,20 @@ import { Table, Spinner, notify, AesirXSelect as SelectComponent, ActionsBar } f
 import { historyPush } from 'routes/routes';
 import UtilsStore from 'store/UtilsStore/UtilsStore';
 import UtilsViewModel from 'store/UtilsStore/UtilsViewModel';
+import { LanguageList } from 'components/ContentLanguagesSwitcher/LanguageList';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useContentLanguage } from 'store/ContentLanguageStore';
 
 const utilsStore = new UtilsStore();
 const utilsViewModel = new UtilsViewModel(utilsStore);
+
 const ListCategories = observer((props) => {
+  const { store: contentLanguageStore } = useContentLanguage();
   const { t } = props;
   let listSelected = [];
 
   const viewModel = props.model?.categoryListViewModel;
-
   const columnsTable = [
     {
       Header: t('txt_category_name'),
@@ -26,9 +31,9 @@ const ListCategories = observer((props) => {
         return (
           <>
             <div className="d-flex align-items-center py-8px">
-              {value.level > 2 && (
+              {value.level > 1 && (
                 <div className="me-1 d-flex align-items-center">
-                  {[...Array(value.level - 2)].map((o, index) => (
+                  {[...Array(value.level - 1)].map((o, index) => (
                     <span
                       key={index}
                       style={{
@@ -65,7 +70,7 @@ const ListCategories = observer((props) => {
       accessor: 'parentName',
       className: 'py-18 text-gray border-bottom-1 text-uppercase fw-semibold align-middle',
       Cell: ({ value }) => {
-        return <>{value == 'ROOT' ? 'Top level' : value}</>;
+        return <>{value == 'ROOT' || !value ? 'Top level' : value}</>;
       },
     },
     {
@@ -83,6 +88,43 @@ const ListCategories = observer((props) => {
       className: 'py-18 text-gray border-bottom-1 text-uppercase fw-semi',
       Cell: ({ value }) => {
         return <div className="d-inline-block border px-1 rounded-pill">{value}</div>;
+      },
+    },
+    {
+      Header: <LanguageList />,
+      accessor: 'translations',
+      className: 'py-18 text-gray border-bottom-1 text-uppercase fw-semi',
+      Cell: ({ value, row }) => {
+        if (!value || !row?.values?.category?.id) return <></>;
+        const listTranslations = Object.entries(value).map(([code, value]) => ({
+          code,
+          value,
+        }));
+        return (
+          <div className="d-flex">
+            {listTranslations?.map((item, index) => {
+              if (
+                (contentLanguageStore.language === '*' &&
+                  item.code == contentLanguageStore.defaultLanguage) ||
+                contentLanguageStore.language == item.code
+              ) {
+                return <Fragment key={index}></Fragment>;
+              }
+              return (
+                <button
+                  onClick={() => {
+                    historyPush(`/categories/edit/${row?.values?.category?.id}?lang=${item.code}`);
+                  }}
+                  style={{ width: '22px' }}
+                  key={index}
+                  className="text-center p-0 border-0"
+                >
+                  <FontAwesomeIcon width={20} height={20} icon={item?.value ? faPen : faPlus} />
+                </button>
+              );
+            })}
+          </div>
+        );
       },
     },
     {

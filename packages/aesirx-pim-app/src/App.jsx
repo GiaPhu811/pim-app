@@ -15,10 +15,13 @@ import { authRoutes, mainRoutes, settingRoutes } from 'routes/routes';
 import { AesirXDamStorage } from 'aesirx-dam-app';
 import { settingMenu, profileMenu } from 'routes/menu';
 import SbarLeft from 'components/SbarLeft';
+import { ContentLanguagesSwitcher } from 'components/ContentLanguagesSwitcher';
+import { ContentLanguageProvider } from 'store/ContentLanguageStore';
 
 const App = () => {
   return (
-    <AppProvider
+    <ContentLanguageProvider>
+      <AppProvider
       appLanguages={appLanguages}
       authRoutes={authRoutes}
       mainRoutes={mainRoutes}
@@ -29,7 +32,9 @@ const App = () => {
       leftMenu={<SbarLeft />}
       settingMenu={<Menu dataMenu={settingMenu} />}
       logo={'/assets/images/logo_company.svg'}
-    />
+      componentHeader={<ContentLanguagesSwitcher />}
+      />
+    </ContentLanguageProvider>
   );
 };
 

@@ -105,6 +105,7 @@ const renderingGroupFieldHandler = (group, validator) => {
                   </div>
                   <Form.Control
                     as="textarea"
+                    rows={4}
                     defaultValue={field.getValueSelected}
                     required={field.required ?? false}
                     id={field.key}

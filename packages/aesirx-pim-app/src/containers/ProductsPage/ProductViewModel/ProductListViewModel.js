@@ -9,10 +9,11 @@
  */
 
 import PAGE_STATUS from 'constants/PageStatus';
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, runInAction, reaction } from 'mobx';
 import { PIM_PRODUCT_DETAIL_FIELD_KEY } from 'aesirx-lib';
 import moment from 'moment';
 import { notify } from 'aesirx-uikit';
+import { contentLanguageStore } from 'store/ContentLanguageStore/ContentLanguageStore';
 class ProductListViewModel {
   productStore = null;
   formStatus = PAGE_STATUS.READY;
@@ -35,6 +36,12 @@ class ProductListViewModel {
   constructor(productStore) {
     makeAutoObservable(this);
     this.productStore = productStore;
+    reaction(
+      () => contentLanguageStore.language,
+      () => {
+        this.initializeData();
+      }
+    );
   }
 
   initializeData = async () => {
@@ -228,7 +235,7 @@ class ProductListViewModel {
   };
 
   onSuccessGetCategoriesHandler = (result) => {
-    this.successResponse.listCategories = result.listItems.map((o) => {
+    this.successResponse.listCategories = result?.listItems?.map((o) => {
       let dash = '';
       for (let index = 1; index < o.level; index++) {
         dash += '- ';
@@ -254,7 +261,6 @@ class ProductListViewModel {
       //       PIM_PRODUCT_DETAIL_FIELD_KEY.DOWNLOAD_URL
       //     ]
       //   : 'test';
-
       return {
         id: o[PIM_PRODUCT_DETAIL_FIELD_KEY.ID],
         productInfo: {
@@ -266,6 +272,7 @@ class ProductListViewModel {
         author: o[PIM_PRODUCT_DETAIL_FIELD_KEY.CREATED_USER_NAME],
         featured: o[PIM_PRODUCT_DETAIL_FIELD_KEY.FEATURED],
         type: o[PIM_PRODUCT_DETAIL_FIELD_KEY.PRODUCT_TYPE_NAME],
+        translations: o[PIM_PRODUCT_DETAIL_FIELD_KEY.TRANSLATIONS],
         lastModified: {
           status: o[PIM_PRODUCT_DETAIL_FIELD_KEY.STATE],
           dateTime: date ?? '',

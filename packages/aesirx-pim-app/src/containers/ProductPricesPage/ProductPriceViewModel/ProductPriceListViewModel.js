@@ -182,10 +182,14 @@ class ProductPriceListViewModel {
       const productTitle = o[PIM_PRICES_DETAIL_FIELD_KEY.PRODUCTS][0]
         ? o[PIM_PRICES_DETAIL_FIELD_KEY.PRODUCTS][0][PIM_PRICES_DETAIL_FIELD_KEY.TITLE]
         : '';
+        console.log(o?.products?.[0]?.custom_fields?.thumb_image)
       return {
         id: o[PIM_PRICES_DETAIL_FIELD_KEY.ID],
         productInfo: {
-          thumbImageUrl: o[PIM_PRICES_DETAIL_FIELD_KEY.THUMB_IMAGE_URL],
+          thumbImageUrl:
+            o[PIM_PRICES_DETAIL_FIELD_KEY.PRODUCTS]?.[0]?.[
+              PIM_PRICES_DETAIL_FIELD_KEY.CUSTOM_FIELDS
+            ]?.[PIM_PRICES_DETAIL_FIELD_KEY.THUMB_IMAGE],
           title: productTitle,
         },
         author: o[PIM_PRICES_DETAIL_FIELD_KEY.CREATED_USER_NAME],

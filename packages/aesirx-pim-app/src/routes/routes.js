@@ -12,6 +12,7 @@ import {
 } from 'aesirx-uikit';
 import { LoginPage } from '../containers/LoginPage';
 import { ProfilePage } from '../containers/ProfilePage';
+const WooIntegrationPage = lazy(() => import('../containers/WooIntegrationPage'));
 const SSOConfig = lazy(() =>
   import('aesirx-sso').then((module) => {
     return { default: module.SSOConfig };
@@ -368,6 +369,11 @@ const mainRoutes = [
     path: ['/shipping-rate/add'],
     exact: true,
     main: () => <EditShippingRateProvider />,
+  },
+  {
+    path: ['/woo-integration'],
+    exact: true,
+    main: () => <WooIntegrationPage />,
   },
 ];
 

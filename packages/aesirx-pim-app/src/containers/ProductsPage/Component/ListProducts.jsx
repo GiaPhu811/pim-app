@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, Fragment } from 'react';
 import { withTranslation } from 'react-i18next';
 import { withProductViewModel } from '../ProductViewModel/ProductViewModelContextProvider';
 import { Tab, Tabs } from 'react-bootstrap';
@@ -8,11 +8,17 @@ import DateRangePicker from 'components/DateRangePicker';
 import { historyPush } from 'routes/routes';
 import UtilsStore from 'store/UtilsStore/UtilsStore';
 import UtilsViewModel from 'store/UtilsStore/UtilsViewModel';
+import { LanguageList } from 'components/ContentLanguagesSwitcher/LanguageList';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen, faPlus, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { useContentLanguage } from 'store/ContentLanguageStore';
+import _ from 'lodash';
 
 const utilsStore = new UtilsStore();
 const utilsViewModel = new UtilsViewModel(utilsStore);
 
 const ListProducts = observer((props) => {
+  const { store: contentLanguageStore } = useContentLanguage();
   const { t } = props;
   let listSelected = [];
   const viewModel = props?.model?.productListViewModel;
@@ -77,6 +83,12 @@ const ListProducts = observer((props) => {
     viewModel.getListByFilter('filter[category]', value?.value);
   };
 
+  const debouncedSearchHandler = _.debounce((e) => {
+    const keyword = e.target.value;
+    viewModel.isLoading();
+    viewModel.getListByFilter('filter[search]', keyword);
+  }, 300);
+
   const deleteProducts = () => {
     if (listSelected.length < 1) {
       notify(t('txt_row_select_error'), 'error');
@@ -137,6 +149,20 @@ const ListProducts = observer((props) => {
 
           <div className="d-flex align-items-center justify-content-between gap-2 my-20">
             <div className="d-flex gap-2">
+              <div
+                id="search-box"
+                className="d-flex align-items-center bg-white shadow-sm rounded-2 px-3"
+              >
+                <FontAwesomeIcon icon={faMagnifyingGlass} className="text-gray" />
+                <input
+                  type="text"
+                  className="border-0 bg-transparent fs-sm ps-2 py-2"
+                  style={{ outline: 'none', minWidth: 200 }}
+                  defaultValue={viewModel?.successResponse?.filters['filter[search]'] ?? ''}
+                  placeholder={t('txt_search')}
+                  onChange={debouncedSearchHandler}
+                />
+              </div>
               <SelectComponent
                 options={viewModel?.successResponse?.listPublishStatus.map((o) => {
                   return {
@@ -362,6 +388,47 @@ const ListProducts = observer((props) => {
                   </svg>
                 </div>
               ),
+            },
+            {
+              Header: <LanguageList />,
+              accessor: 'translations',
+              className: 'py-18 text-gray border-bottom-1 text-uppercase fw-semi',
+              Cell: ({ value, row }) => {
+                if (!value || !row?.values?.id) return <></>;
+                const listTranslations = Object.entries(value).map(([code, value]) => ({
+                  code,
+                  value,
+                }));
+                return (
+                  <div className="d-flex">
+                    {listTranslations?.map((item, index) => {
+                      if (
+                        (contentLanguageStore.language === '*' &&
+                          item.code == contentLanguageStore.defaultLanguage) ||
+                        contentLanguageStore.language == item.code
+                      ) {
+                        return <Fragment key={index}></Fragment>;
+                      }
+                      return (
+                        <button
+                          onClick={() => {
+                            historyPush(`/products/edit/${row?.values?.id}?lang=${item.code}`);
+                          }}
+                          style={{ width: '22px' }}
+                          key={index}
+                          className="text-center p-0 border-0"
+                        >
+                          <FontAwesomeIcon
+                            width={20}
+                            height={20}
+                            icon={item?.value ? faPen : faPlus}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              },
             },
             {
               Header: t('txt_last_modified'),

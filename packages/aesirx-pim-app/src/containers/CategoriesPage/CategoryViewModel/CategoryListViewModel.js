@@ -4,10 +4,11 @@
  */
 
 import PAGE_STATUS from '../../../constants/PageStatus';
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, runInAction, reaction } from 'mobx';
 import { notify } from 'aesirx-uikit';
 import { PIM_CATEGORY_DETAIL_FIELD_KEY } from 'aesirx-lib';
 import moment from 'moment';
+import { contentLanguageStore } from 'store/ContentLanguageStore/ContentLanguageStore';
 class CategoryListViewModel {
   categoryStore = null;
   formStatus = PAGE_STATUS.READY;
@@ -28,6 +29,12 @@ class CategoryListViewModel {
   constructor(categoryStore) {
     makeAutoObservable(this);
     this.categoryStore = categoryStore;
+    reaction(
+      () => contentLanguageStore.language,
+      () => {
+        this.initializeData();
+      }
+    );
   }
 
   setForm = (categoryListViewModel) => {
@@ -86,7 +93,7 @@ class CategoryListViewModel {
     });
   };
   onSuccessHandlerCustom = (result) => {
-    this.items = result.listItems;
+    this.items = result?.listItems;
     this.formStatus = PAGE_STATUS.READY;
   };
 
@@ -236,7 +243,7 @@ class CategoryListViewModel {
   };
 
   onSuccessGetCategoriesHandler = (result) => {
-    this.successResponse.listCategoriesWithoutPagination = result.listItems.map((o) => {
+    this.successResponse.listCategoriesWithoutPagination = result?.listItems?.map((o) => {
       let dash = '';
       for (let index = 2; index < o.level; index++) {
         dash += '- ';
@@ -265,6 +272,7 @@ class CategoryListViewModel {
           state: o[PIM_CATEGORY_DETAIL_FIELD_KEY.PUBLISHED],
           id: o[PIM_CATEGORY_DETAIL_FIELD_KEY.ID],
         },
+        translations: o[PIM_CATEGORY_DETAIL_FIELD_KEY.TRANSLATIONS],
         parentName: o[PIM_CATEGORY_DETAIL_FIELD_KEY.PARENT_NAME],
       };
     });
