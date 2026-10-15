@@ -145,6 +145,11 @@ const ListProducts = observer((props) => {
                 title={t(`txt_${o?.label && o.label?.toString().replace(/ /g, '_').toLowerCase()}`)}
               />
             ))}
+              <Tab
+                key={'featured'}
+                eventKey={'featured'}
+                title={`Featured`}
+              />
           </Tabs>
 
           <div className="d-flex align-items-center justify-content-between gap-2 my-20">

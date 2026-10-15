@@ -6,11 +6,11 @@
 import React, { lazy } from 'react';
 import {
   DigitalAssetsPage,
-  MembersPage,
   EditMemberProvider,
   history,
 } from 'aesirx-uikit';
 import { LoginPage } from '../containers/LoginPage';
+import MembersPage from '../containers/MembersPage';
 import { ProfilePage } from '../containers/ProfilePage';
 const WooIntegrationPage = lazy(() => import('../containers/WooIntegrationPage'));
 const SSOConfig = lazy(() =>

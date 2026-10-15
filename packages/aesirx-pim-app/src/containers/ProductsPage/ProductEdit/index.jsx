@@ -17,6 +17,7 @@ import { withProductViewModel } from 'containers/ProductsPage/ProductViewModel/P
 import { PIM_FIELD_DETAIL_FIELD_KEY, PIM_PRODUCT_DETAIL_FIELD_KEY } from 'aesirx-lib';
 import ProductInformation from './Component/ProductInformation';
 import FieldsTab from './Component/Fields';
+import TranslationBlock from './Component/TranslationBlock';
 // import Variants from '../Component/Variants';
 import SimpleReactValidator from 'simple-react-validator';
 import CategoryStore from 'containers/CategoriesPage/CategoryStore/CategoryStore';
@@ -91,6 +92,13 @@ const EditProduct = observer(
       ]).then(() => {
         this.productDetailViewModel.handleAliasChange('');
       });
+    }
+
+    async componentDidUpdate(prevProps) {
+      // Re-fetch when only the `?lang=` query changes (same route, no remount).
+      if (this.isEdit && prevProps.location?.search !== this.props.location?.search) {
+        await this.productDetailViewModel.initializeData();
+      }
     }
 
     handleAliasFormPropsData() {
@@ -334,6 +342,14 @@ const EditProduct = observer(
                   formPropsData={this.productDetailViewModel.productDetailViewModel.formPropsData}
                   isEdit={this.isEdit}
                 />
+                {this.isEdit && (
+                  <TranslationBlock
+                    formPropsData={
+                      this.productDetailViewModel.productDetailViewModel.formPropsData
+                    }
+                    productId={this.props.match.params?.id}
+                  />
+                )}
               </Col>
             </Row>
           </Form>

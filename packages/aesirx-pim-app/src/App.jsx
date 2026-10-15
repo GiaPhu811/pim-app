@@ -28,11 +28,11 @@ const App = () => {
       settingRoutes={settingRoutes}
       profileMenu={profileMenu}
       isLogin={isLogin}
-      componentBottomMenu={<AesirXDamStorage />}
+      // componentBottomMenu={<AesirXDamStorage />}
       leftMenu={<SbarLeft />}
       settingMenu={<Menu dataMenu={settingMenu} />}
       logo={'/assets/images/logo_company.svg'}
-      componentHeader={<ContentLanguagesSwitcher />}
+      // componentHeader={<ContentLanguagesSwitcher />}
       />
     </ContentLanguageProvider>
   );

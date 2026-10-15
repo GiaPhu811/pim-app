@@ -30,7 +30,7 @@
     "web-vitals": "^3.3.1"
   },
   "scripts": {
-    "start": "yarn run build && serve -s build",
+    "start": "serve -s build",
     "build": "craco build",
     "test": "react-scripts test",
     "dev": "craco start",
